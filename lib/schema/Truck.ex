@@ -1,37 +1,7 @@
 defmodule Schema.Truck do
   @moduledoc """
   This module is responsible for defining the Truck struct and its functions.
-  """
 
-  @derive Jason.Encoder
-  defstruct [
-    :objectid,
-    :applicant,
-    :facility_type,
-    :cnn,
-    :location_description,
-    :address,
-    :block_lot,
-    :block,
-    :lot,
-    :permit,
-    :status,
-    :food_items,
-    :x,
-    :y,
-    :latitude,
-    :longitude,
-    :schedule,
-    :days_hours,
-    :received,
-    :prior_permit,
-    :location,
-    :approved,
-    :expiration_date,
-    :zip_code
-  ]
-
-  @typedoc """
   ### Fields
 
   - `objectid` - The unique identifier for the food truck.
@@ -88,6 +58,35 @@ defmodule Schema.Truck do
         zip_code: 94111
       }
   """
+
+  @derive Jason.Encoder
+  defstruct [
+    :objectid,
+    :applicant,
+    :facility_type,
+    :cnn,
+    :location_description,
+    :address,
+    :block_lot,
+    :block,
+    :lot,
+    :permit,
+    :status,
+    :food_items,
+    :x,
+    :y,
+    :latitude,
+    :longitude,
+    :schedule,
+    :days_hours,
+    :received,
+    :prior_permit,
+    :location,
+    :approved,
+    :expiration_date,
+    :zip_code
+  ]
+
   @type t :: %__MODULE__{
           objectid: integer(),
           applicant: String.t(),
@@ -122,7 +121,7 @@ defmodule Schema.Truck do
   @doc """
   Converts a JSON object to a Truck struct.
   """
-  @spec build_data_from_query(String.t()) :: String.t()
+  @spec build_data_from_query(String.t()) :: [t()]
   def build_data_from_query(data) do
     data
     |> Enum.map(&from_json/1)

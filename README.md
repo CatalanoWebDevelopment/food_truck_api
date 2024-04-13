@@ -21,5 +21,5 @@ After adding additional documentation to an endpoint or module for ExDoc, run:
 
 To view documentation, run:
 
-1. `mix phx.server`
+1. `mix start`
 2. Navigate to <http://localhost:4000/docs/FoodTruckApi.html> or click the "Docs" link on the home page.

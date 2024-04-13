@@ -3,8 +3,11 @@ defmodule FoodTruckApiWeb.TruckController do
   alias HTTPoison
   alias Schema.Truck
 
+  @base_url "https://data.sfgov.org/resource/rqzj-sfat.json"
+  @approved_url "https://data.sfgov.org/resource/rqzj-sfat.json?status=APPROVED"
+
   @doc """
-  Retrieves a list of food trucks.
+  Retrieves a list of food trucks in the San Francisco area.
 
   ## Examples
 
@@ -23,25 +26,49 @@ defmodule FoodTruckApiWeb.TruckController do
   """
   @spec index(Plug.Conn.t(), map) :: [Truck.t()] | {:error, String.t()}
   def index(conn, _params) do
-    case http_client().get("https://data.sfgov.org/resource/rqzj-sfat.json") do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        conn
-        |> put_status(200)
-        |> json(%{data: Truck.build_data_from_query(Jason.decode!(body))})
-
-      {:ok, %HTTPoison.Response{status_code: 404}} ->
-        conn
-        |> put_status(404)
-        |> json(%{error: "Not Found"})
-
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        conn
-        |> put_status(500)
-        |> json(%{error: "Internal Server Error: #{reason}"})
-    end
+    {status, response} = HTTPoison.get(@base_url)
+    handle_response(conn, {status, response})
   end
 
-  defp http_client do
-    Application.get_env(:food_truck_api, :http_client)
+  @doc """
+  Retrieves a list of approved food trucks in the San Francisco area.
+
+  ## Examples
+
+      iex> TruckController.list_approved_trucks(%Plug.Conn{}, %{})
+      {:ok, [%Truck{}]}
+
+      iex> TruckController.list_approved_trucks(%Plug.Conn{}, %{})
+      {:error, "Not Found"}
+
+      iex> TruckController.list_approved_trucks(%Plug.Conn{}, %{})
+      {:error, "Internal Server Error: reason"}
+
+  ## Route
+
+      GET /api/trucks/approved
+  """
+  @spec list_approved_trucks(Plug.Conn.t(), map) :: [Truck.t()] | {:error, String.t()}
+  def list_approved_trucks(conn, _params) do
+    {status, response} = HTTPoison.get(@approved_url)
+    handle_response(conn, {status, response})
+  end
+
+  defp handle_response(conn, {:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
+    conn
+    |> put_status(200)
+    |> json(%{data: Truck.build_data_from_query(Jason.decode!(body))})
+  end
+
+  defp handle_response(conn, {:ok, %HTTPoison.Response{status_code: 404}}) do
+    conn
+    |> put_status(404)
+    |> json(%{error: "Not Found"})
+  end
+
+  defp handle_response(conn, {:error, %HTTPoison.Error{reason: reason}}) do
+    conn
+    |> put_status(500)
+    |> json(%{error: "Internal Server Error: #{reason}"})
   end
 end
