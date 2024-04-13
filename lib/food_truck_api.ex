@@ -1,9 +1,14 @@
 defmodule FoodTruckApi do
   @moduledoc """
-  FoodTruckApi keeps the contexts that define your domain
-  and business logic.
+  Food Truck API is an API that connects with the City of San Francisco's public Mobile Food Facility Permits dataset.
+  It handles a number of different queries to get you the latest info on the hottest new food trucks.
 
-  Contexts are also responsible for managing your data, regardless
-  if it comes from the database, an external API or others.
+  ## Available routes:
+
+  ```
+  #{for %{verb: verb, path: path} <- Phoenix.Router.routes(FoodTruckApiWeb.Router) do
+    [String.upcase(to_string(verb)), " ", path, "\n"]
+  end}
+  ```
   """
 end
