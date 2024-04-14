@@ -22,3 +22,9 @@ To view documentation, run:
 
 1. `mix start`
 2. Navigate to <http://localhost:4000/docs/FoodTruckApi.html> or click the "Docs" link on the home page.
+
+## Example
+
+The following is a call to get all of the taco trucks with an approved permit:
+
+https://food-truck-api-63f05bcc353b.herokuapp.com/api/trucks/tacos
