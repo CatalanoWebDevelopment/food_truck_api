@@ -17,7 +17,6 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 After adding additional documentation to an endpoint or module for ExDoc, run:
 
 1. `mix docs`
-2. `ln -s $(pwd)/doc $(pwd)/priv/static/docs` (This will copy over the docs to the priv/static folder)
 
 To view documentation, run:
 
