@@ -65,7 +65,8 @@ defmodule FoodTruckApi.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.2"},
       {:httpoison, "~> 2.2"},
-      {:ex_doc, "~> 0.31", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.31", only: :dev, runtime: false},
+      {:mock, "~> 0.3", only: :test}
     ]
   end
 
@@ -84,7 +85,8 @@ defmodule FoodTruckApi.MixProject do
         "tailwind food_truck_api --minify",
         "esbuild food_truck_api --minify",
         "phx.digest"
-      ]
+      ],
+      start: ["phx.server"]
     ]
   end
 end
