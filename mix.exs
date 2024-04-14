@@ -17,8 +17,7 @@ defmodule FoodTruckApi.MixProject do
       homepage_url: "http://localhost:4000",
       docs: [
         main: "FoodTruckApi",
-        extras: ["README.md"],
-        output: "docs"
+        extras: ["README.md"]
       ]
     ]
   end
