@@ -65,114 +65,102 @@ defmodule FoodTruckApiWeb.TruckControllerTest do
     "zip_code" => 94111
   }
 
+  @scenarios [
+    %{
+      status_code: 200,
+      expected: %{"data" => [@approved_truck_struct]}
+    },
+    %{
+      status_code: 404,
+      expected: %{"error" => "Not Found"}
+    },
+    %{
+      status_code: 500,
+      expected: %{"error" => "Internal Server Error: Test Failure"}
+    }
+  ]
+
   describe("#index/2") do
     test "Returns a list of food trucks on successful response", %{conn: conn} do
-      with_mock HTTPoison,
-        get: fn _conn ->
-          {:ok,
-           %HTTPoison.Response{
-             status_code: 200,
-             body: @approved_body
-           }}
-        end do
-        conn = TruckController.index(conn, %{})
-
-        assert json_response(conn, 200) == %{
-                 "data" => [@approved_truck_struct]
-               }
-      end
+      mock_http_response(200, @approved_body, fn -> callback(conn, &TruckController.index/2) end)
     end
 
     test "Returns an error message when the response status is 404", %{conn: conn} do
-      with_mock HTTPoison,
-        get: fn _conn -> {:ok, %HTTPoison.Response{status_code: 404}} end do
-        conn = TruckController.index(conn, %{})
-
-        assert json_response(conn, 404) == %{"error" => "Not Found"}
-      end
+      mock_http_response(404, "Not Found", fn -> callback(conn, &TruckController.index/2) end)
     end
 
     test "Returns an error message when the response status is 500", %{conn: conn} do
-      with_mock HTTPoison,
-        get: fn _conn -> {:error, %HTTPoison.Error{reason: "Test Failure"}} end do
-        conn = TruckController.index(conn, %{})
-
-        assert json_response(conn, 500) == %{"error" => "Internal Server Error: Test Failure"}
-      end
+      mock_http_response(500, "Internal Server Error: Test Failure", fn ->
+        callback(conn, &TruckController.index/2)
+      end)
     end
   end
 
   describe "#list_approved_trucks/2" do
     test "Returns a list of approved food trucks on successful response", %{conn: conn} do
-      with_mock HTTPoison,
-        get: fn _conn ->
-          {:ok,
-           %HTTPoison.Response{
-             status_code: 200,
-             body: @approved_body
-           }}
-        end do
-        conn = TruckController.list_approved_trucks(conn, %{})
-
-        assert json_response(conn, 200) == %{
-                 "data" => [@approved_truck_struct]
-               }
-      end
+      mock_http_response(200, @approved_body, fn ->
+        callback(conn, &TruckController.list_approved_trucks/2)
+      end)
     end
 
     test "Returns an error message when the response status is 404", %{conn: conn} do
-      with_mock HTTPoison,
-        get: fn _conn -> {:ok, %HTTPoison.Response{status_code: 404}} end do
-        conn = TruckController.list_approved_trucks(conn, %{})
-
-        assert json_response(conn, 404) == %{"error" => "Not Found"}
-      end
+      mock_http_response(404, "Not Found", fn ->
+        callback(conn, &TruckController.list_approved_trucks/2)
+      end)
     end
 
     test "Returns an error message when the response status is 500", %{conn: conn} do
-      with_mock HTTPoison,
-        get: fn _conn -> {:error, %HTTPoison.Error{reason: "Test Failure"}} end do
-        conn = TruckController.list_approved_trucks(conn, %{})
-
-        assert json_response(conn, 500) == %{"error" => "Internal Server Error: Test Failure"}
-      end
+      mock_http_response(500, "Internal Server Error: Test Failure", fn ->
+        callback(conn, &TruckController.list_approved_trucks/2)
+      end)
     end
   end
 
   describe "#list_taco_trucks" do
     test "Returns a list of taco trucks on successful response", %{conn: conn} do
-      with_mock HTTPoison,
-        get: fn _conn ->
-          {:ok,
-           %HTTPoison.Response{
-             status_code: 200,
-             body: @approved_body
-           }}
-        end do
-        conn = TruckController.list_taco_trucks(conn, %{})
-
-        assert json_response(conn, 200) == %{
-                 "data" => [@approved_truck_struct]
-               }
-      end
+      mock_http_response(200, @approved_body, fn ->
+        callback(conn, &TruckController.list_taco_trucks/2)
+      end)
     end
 
     test "Returns an error message when the response status is 404", %{conn: conn} do
-      with_mock HTTPoison,
-        get: fn _conn -> {:ok, %HTTPoison.Response{status_code: 404}} end do
-        conn = TruckController.list_taco_trucks(conn, %{})
-
-        assert json_response(conn, 404) == %{"error" => "Not Found"}
-      end
+      mock_http_response(404, "Not Found", fn ->
+        callback(conn, &TruckController.list_taco_trucks/2)
+      end)
     end
 
     test "Returns an error message when the response status is 500", %{conn: conn} do
-      with_mock HTTPoison,
-        get: fn _conn -> {:error, %HTTPoison.Error{reason: "Test Failure"}} end do
-        conn = TruckController.list_taco_trucks(conn, %{})
-
-        assert json_response(conn, 500) == %{"error" => "Internal Server Error: Test Failure"}
-      end
+      mock_http_response(500, "Internal Server Error: Test Failure", fn ->
+        callback(conn, &TruckController.list_taco_trucks/2)
+      end)
     end
+  end
+
+  defp mock_http_response(status_code, body, callback) do
+    response =
+      case status_code do
+        200 -> {:ok, %HTTPoison.Response{status_code: 200, body: body}}
+        404 -> {:ok, %HTTPoison.Response{status_code: 404, body: "Not Found"}}
+        500 -> {:error, %HTTPoison.Error{reason: "Test Failure"}}
+      end
+
+    with_mock(HTTPoison,
+      get: fn _conn -> response end
+    ) do
+      callback.()
+    end
+  end
+
+  defp assert_json_response(conn, status_code, expected) do
+    assert json_response(conn, status_code) == expected
+  end
+
+  defp callback(conn, endpoint) do
+    conn = endpoint.(conn, %{})
+
+    %{status_code: status_code, expected: expected} =
+      @scenarios |> Enum.find(&(&1[:status_code] == conn.status))
+
+    assert_json_response(conn, status_code, expected)
   end
 end
