@@ -127,6 +127,16 @@ defmodule Schema.Truck do
     |> Enum.map(&from_json/1)
   end
 
+  @doc """
+  Returns a list of taco trucks.
+  """
+  @spec list_taco_trucks(String.t()) :: [t()]
+  def list_taco_trucks(data) do
+    data
+    |> Enum.map(&from_json/1)
+    |> Enum.filter(&(&1.food_items =~ "Taco"))
+  end
+
   defp from_json(json) do
     %Schema.Truck{
       objectid: json["objectid"],
