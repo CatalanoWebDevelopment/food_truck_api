@@ -19,12 +19,16 @@ config :logger, level: :info
 
 # Configure Heroku
 config :food_truck_api, FoodTruckApiWeb.Endpoint,
+  http: [:inet6, port: System.get_env("PORT") || 4000],
   url: [scheme: "https", host: System.get_env("APP_NAME") <> ".herokuapp.com", port: 443],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true,
   root: ".",
   version: Application.spec(:food_truck_api, :vsn)
+
+config :food_truck_api, FoodTruckApiWeb.Endpoint,
+  secret_key_base: System.get_env("SECRET_KEY_BASE")
 
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
