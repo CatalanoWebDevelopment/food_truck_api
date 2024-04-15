@@ -82,16 +82,18 @@ defmodule FoodTruckApiWeb.TruckControllerTest do
 
   describe("#index/2") do
     test "Returns a list of food trucks on successful response", %{conn: conn} do
-      mock_http_response(200, @approved_body, fn -> callback(conn, &TruckController.index/2) end)
+      mock_http_response(200, @approved_body, fn ->
+        callback(conn, &TruckController.index/2, nil)
+      end)
     end
 
     test "Returns an error message when the response status is 404", %{conn: conn} do
-      mock_http_response(404, "Not Found", fn -> callback(conn, &TruckController.index/2) end)
+      mock_http_response(404, "Not Found", fn -> callback(conn, &TruckController.index/2, nil) end)
     end
 
     test "Returns an error message when the response status is 500", %{conn: conn} do
       mock_http_response(500, "Internal Server Error: Test Failure", fn ->
-        callback(conn, &TruckController.index/2)
+        callback(conn, &TruckController.index/2, nil)
       end)
     end
   end
@@ -99,19 +101,19 @@ defmodule FoodTruckApiWeb.TruckControllerTest do
   describe "#list_approved_trucks/2" do
     test "Returns a list of approved food trucks on successful response", %{conn: conn} do
       mock_http_response(200, @approved_body, fn ->
-        callback(conn, &TruckController.list_approved_trucks/2)
+        callback(conn, &TruckController.list_approved_trucks/2, nil)
       end)
     end
 
     test "Returns an error message when the response status is 404", %{conn: conn} do
       mock_http_response(404, "Not Found", fn ->
-        callback(conn, &TruckController.list_approved_trucks/2)
+        callback(conn, &TruckController.list_approved_trucks/2, nil)
       end)
     end
 
     test "Returns an error message when the response status is 500", %{conn: conn} do
       mock_http_response(500, "Internal Server Error: Test Failure", fn ->
-        callback(conn, &TruckController.list_approved_trucks/2)
+        callback(conn, &TruckController.list_approved_trucks/2, nil)
       end)
     end
   end
@@ -119,19 +121,39 @@ defmodule FoodTruckApiWeb.TruckControllerTest do
   describe "#list_taco_trucks" do
     test "Returns a list of taco trucks on successful response", %{conn: conn} do
       mock_http_response(200, @approved_body, fn ->
-        callback(conn, &TruckController.list_taco_trucks/2)
+        callback(conn, &TruckController.list_taco_trucks/2, nil)
       end)
     end
 
     test "Returns an error message when the response status is 404", %{conn: conn} do
       mock_http_response(404, "Not Found", fn ->
-        callback(conn, &TruckController.list_taco_trucks/2)
+        callback(conn, &TruckController.list_taco_trucks/2, nil)
       end)
     end
 
     test "Returns an error message when the response status is 500", %{conn: conn} do
       mock_http_response(500, "Internal Server Error: Test Failure", fn ->
-        callback(conn, &TruckController.list_taco_trucks/2)
+        callback(conn, &TruckController.list_taco_trucks/2, nil)
+      end)
+    end
+  end
+
+  describe "#list_trucks_by_food" do
+    test "Returns a list of food trucks on successful response", %{conn: conn} do
+      mock_http_response(200, @approved_body, fn ->
+        callback(conn, &TruckController.list_trucks_by_food/2, %{"food" => "Tacos"})
+      end)
+    end
+
+    test "Returns an error message when the response status is 404", %{conn: conn} do
+      mock_http_response(404, "Not Found", fn ->
+        callback(conn, &TruckController.list_trucks_by_food/2, %{"food" => "Tacos"})
+      end)
+    end
+
+    test "Returns an error message when the response status is 500", %{conn: conn} do
+      mock_http_response(500, "Internal Server Error: Test Failure", fn ->
+        callback(conn, &TruckController.list_trucks_by_food/2, %{"food" => "Tacos"})
       end)
     end
   end
@@ -155,8 +177,17 @@ defmodule FoodTruckApiWeb.TruckControllerTest do
     assert json_response(conn, status_code) == expected
   end
 
-  defp callback(conn, endpoint) do
+  defp callback(conn, endpoint, nil) do
     conn = endpoint.(conn, %{})
+
+    %{status_code: status_code, expected: expected} =
+      @scenarios |> Enum.find(&(&1[:status_code] == conn.status))
+
+    assert_json_response(conn, status_code, expected)
+  end
+
+  defp callback(conn, endpoint, arg) do
+    conn = endpoint.(conn, arg)
 
     %{status_code: status_code, expected: expected} =
       @scenarios |> Enum.find(&(&1[:status_code] == conn.status))
