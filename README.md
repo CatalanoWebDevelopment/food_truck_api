@@ -25,10 +25,10 @@ To view documentation, run:
 
 ## Live API & Docs
 
-https://food-truck-api-63f05bcc353b.herokuapp.com/
+<https://food-truck-api-63f05bcc353b.herokuapp.com/>
 
 ## Example
 
 The following is a call to get all of the trucks with an approved permit that serve hot dogs as one of their food items:
 
-https://food-truck-api-63f05bcc353b.herokuapp.com/api/trucks/food/hot%20dogs
+<https://food-truck-api-63f05bcc353b.herokuapp.com/api/trucks/food/hot%20dogs>
