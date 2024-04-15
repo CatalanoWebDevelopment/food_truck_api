@@ -1,6 +1,6 @@
-use Mix.Config
+import Config
 
-config :ex_doc, :elixir_version, System.get_env("ELIXIR_VERSION")
+config :ex_doc, :elixir_version, 1.14
 config :ex_doc, :output_dir, "priv/static/docs"
 
 config :food_truck_api, FoodTruckApiWeb.Endpoint,
