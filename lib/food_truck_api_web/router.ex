@@ -26,6 +26,7 @@ defmodule FoodTruckApiWeb.Router do
     get("/trucks", TruckController, :index)
     get("/trucks/approved", TruckController, :list_approved_trucks)
     get("/trucks/tacos", TruckController, :list_taco_trucks)
+    get("/trucks/food/:food", TruckController, :list_trucks_by_food)
   end
 
   # Other scopes may use custom stacks.

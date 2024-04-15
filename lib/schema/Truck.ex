@@ -137,6 +137,16 @@ defmodule Schema.Truck do
     |> Enum.filter(&(&1.food_items =~ "Taco"))
   end
 
+  @doc """
+  Returns a list of the desired food items.
+  """
+  @spec list_food_items(String.t(), String.t()) :: [t()]
+  def list_food_items(data, food_item) do
+    data
+    |> Enum.map(&from_json/1)
+    |> Enum.filter(&(&1.food_items =~ food_item))
+  end
+
   defp from_json(json) do
     %Schema.Truck{
       objectid: json["objectid"],
