@@ -17,7 +17,8 @@ defmodule FoodTruckApi.MixProject do
       homepage_url: "http://localhost:4000",
       docs: [
         main: "FoodTruckApi",
-        extras: ["README.md"]
+        extras: ["README.md"],
+        output: "priv/static/docs"
       ]
     ]
   end
@@ -82,6 +83,7 @@ defmodule FoodTruckApi.MixProject do
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind food_truck_api", "esbuild food_truck_api"],
       "assets.deploy": [
+        "docs",
         "tailwind food_truck_api --minify",
         "esbuild food_truck_api --minify",
         "phx.digest"
